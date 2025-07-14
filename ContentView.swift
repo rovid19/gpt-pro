@@ -9,13 +9,13 @@ import SwiftUI
 import WebKit
 
 struct ContentView: View {
-    var hotKeyManager: HotKeyManager
+    var appCoordinator: AppCoordinator
     @State private var webView: WKWebView?
     
     var body: some View {
         ChatGPTWebView { webView in
             self.webView = webView
-            self.hotKeyManager.setWebView(webView)
+            self.appCoordinator.shortcutManager.setWebView(webView)
         }
         .frame(minWidth: 800, minHeight: 600)
         .onAppear {
@@ -24,8 +24,5 @@ struct ContentView: View {
     }
 }
 
-#Preview {
-    ContentView(hotKeyManager: HotKeyManager())
-}
 
 

@@ -11,11 +11,12 @@ import ApplicationServices
 
 @main
 struct gpt_pro_appApp: App {
-    @StateObject private var hotKeyManager = HotKeyManager()
+    @StateObject private var appCoordinator = AppCoordinator()
+    private let windowDelegate = WindowDelegate()
     
     var body: some Scene {
         WindowGroup {
-            ContentView(hotKeyManager: hotKeyManager)
+            ContentView(appCoordinator: appCoordinator)
                 .onAppear {
                     checkAccessibilityPermission()
                     setupAppBehavior()
@@ -24,15 +25,15 @@ struct gpt_pro_appApp: App {
         .windowStyle(.hiddenTitleBar)
         .windowResizability(.contentSize)
     }
-}
-
-func setupAppBehavior() {
-    // Prevent app from terminating when window is closed
-    NSApp.setActivationPolicy(.regular)
     
-    // Set up window delegate to handle window closing
-    if let window = NSApp.windows.first {
-        window.delegate = WindowDelegate()
+    private func setupAppBehavior() {
+        // Prevent app from terminating when window is closed
+        NSApp.setActivationPolicy(.regular)
+        
+        // Set up window delegate to handle window closing
+        if let window = NSApp.windows.first {
+            window.delegate = windowDelegate
+        }
     }
 }
 

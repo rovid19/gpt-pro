@@ -1,22 +1,19 @@
 //
-//  HotKeyManager.swift
+//  GlobalShortcut.swift
 //  gpt-pro-app
 //
 //  Created by Roberto Vidovic on 10.07.2025..
 //
 
-import SwiftUI
+import Foundation
 import HotKey
+import Cocoa
 import WebKit
 
-class HotKeyManager: ObservableObject {
+class GlobalShortcut {
     var hotKey: HotKey?
     var newChatHotKey: HotKey?
     private var webView: WKWebView?
-    
-    init() {
-        setup()
-    }
     
     func setWebView(_ webView: WKWebView) {
         self.webView = webView
@@ -97,4 +94,4 @@ class HotKeyManager: ObservableObject {
             }
         }
     }
-} 
+}
