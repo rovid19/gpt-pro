@@ -7,6 +7,7 @@
 
 import Foundation
 import Cocoa
+import WebKit
 
 class AppCoordinator: ObservableObject {
     // MARK: - Managers
@@ -15,24 +16,28 @@ class AppCoordinator: ObservableObject {
     // MARK: - Screenshot Components
     private var screenshotOverlayController: ScreenshotOverlayController?
     
+    // MARK: - WebView
+    @Published var chatGPTWebView: ChatGPTWebView
+    
+    var screenshot: CGImage?
+    
     init() {
         self.shortcutManager = ShortcutManager()
+        self.chatGPTWebView = ChatGPTWebView()
         setupDelegates()
     }
     
     private func setupDelegates() {
         shortcutManager.setAppShortcutDelegate(self)
     }
+
     
     // MARK: - Screenshot Management
     
     func showScreenshotOverlay() {
         screenshotOverlayController = ScreenshotOverlayController(initialRect: CGRect(x: 0, y: 0, width: 400, height: 300))
-        // kad stavim da je appcoordinator delegate screenshotoverlaycontroller, onda to znaci da unutar tog controllea
-        // mogu pozvati funkcije iz appcoordinatora
-        // znaci dobivam keyword "delegate" kojeg mogu koristiti
-        // npr. delegate.hideScreenshotOverlay() i sad pozovem funkciju s tog delegatea
         screenshotOverlayController?.delegate = self
+        // If needed, pass chatGPTWebView or its WKWebView to overlay
     }
     
     func hideScreenshotOverlay() {
@@ -48,8 +53,8 @@ class AppCoordinator: ObservableObject {
 
 
 
-
 // MARK: - AppShortcutDelegate
+
 extension AppCoordinator: AppShortcutDelegate {
     func appShortcutDidRequestScreenshotMode() {
         showScreenshotOverlay()
@@ -61,13 +66,16 @@ extension AppCoordinator: AppShortcutDelegate {
 }
 
 // MARK: - ScreenshotOverlayControllerDelegate
+
 extension AppCoordinator: ScreenshotOverlayControllerDelegate {
     func screenshotOverlayDidRequestExit() {
         hideScreenshotOverlay()
     }
     
     func screenshotOverlayDidCaptureImage(_ image: CGImage) {
-        NSLog("[gptapp] Screenshot captured - size: %dx%d", image.width, image.height)
+        NSLog("[gptapp] AppCoordinator received screenshot from overlay delegate")
+        screenshot = image
+        NSLog("[gptapp] Screenshot saved to AppCoordinator property")
         hideScreenshotOverlay()
     }
 }

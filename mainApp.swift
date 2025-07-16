@@ -19,6 +19,7 @@ struct gpt_pro_appApp: App {
             ContentView(appCoordinator: appCoordinator)
                 .onAppear {
                     checkAccessibilityPermission()
+                    checkScreenshotPermission()
                     setupAppBehavior()
                 }
         }
@@ -51,6 +52,13 @@ class WindowDelegate: NSObject, NSWindowDelegate {
 func checkAccessibilityPermission() {
     if !AXIsProcessTrusted() {
         let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility")!
+        NSWorkspace.shared.open(url)
+    }
+}
+
+func checkScreenshotPermission() {
+    if !CGPreflightScreenCaptureAccess() {
+        let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_ScreenCapture")!
         NSWorkspace.shared.open(url)
     }
 } 

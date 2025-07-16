@@ -10,12 +10,13 @@ import WebKit
 
 struct ChatGPTWebView: NSViewRepresentable {
     var onWebViewReady: ((WKWebView) -> Void)?
+    private let webViewController = WebViewController()
     
     func makeNSView(context: Context) -> WKWebView {
         let configuration = WKWebViewConfiguration()
         let webView = WKWebView(frame: .zero, configuration: configuration)
         webView.navigationDelegate = context.coordinator
-        webView.uiDelegate = context.coordinator
+        webViewController.attach(to: webView)
         webView.configuration.preferences.setValue(true, forKey: "developerExtrasEnabled")
         if let url = URL(string: "https://chat.openai.com") {
             let request = URLRequest(url: url)
@@ -30,7 +31,7 @@ struct ChatGPTWebView: NSViewRepresentable {
         Coordinator(self)
     }
     
-    class Coordinator: NSObject, WKNavigationDelegate, WKUIDelegate {
+    class Coordinator: NSObject, WKNavigationDelegate {
         var parent: ChatGPTWebView
         
         init(_ parent: ChatGPTWebView) {

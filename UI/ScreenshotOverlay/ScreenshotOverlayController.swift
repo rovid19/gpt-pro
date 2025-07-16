@@ -7,17 +7,24 @@
 
 import Foundation
 import Cocoa
+import WebKit
 
 protocol ScreenshotOverlayControllerDelegate: AnyObject {
     func screenshotOverlayDidRequestExit()
     func screenshotOverlayDidCaptureImage(_ image: CGImage)
 }
 
+protocol ScreenshotOverlayWebViewDelegate: AnyObject {
+    func getWebView() -> WKWebView?
+}
+
 class ScreenshotOverlayController: NSResponder {
     weak var delegate: ScreenshotOverlayControllerDelegate?
+    weak var webViewDelegate: ScreenshotOverlayWebViewDelegate?
     private let screenshotService = ScreenshotService()
     private let overlayView: ScreenshotOverlayView
     private let minSize: CGFloat = 100
+
 
 
     init(initialRect: CGRect) {
@@ -166,23 +173,29 @@ class ScreenshotOverlayController: NSResponder {
     }
     
     private func requestCapture() {
+        NSLog("[gptapp] Screenshot capture requested")
         let cropRect = overlayView.frame
-        
         screenshotService.captureOnce { fullImage in
-            guard let fullImage = fullImage else { return }
-            
+            guard let fullImage = fullImage else {
+                NSLog("[gptapp] ScreenshotService returned nil image")
+                return
+            }
             let flippedRect = CGRect(
                 x: cropRect.origin.x,
                 y: CGFloat(fullImage.height) - cropRect.origin.y - cropRect.height,
                 width: cropRect.width,
                 height: cropRect.height
             )
-            
-            guard let cropped = fullImage.cropping(to: flippedRect) else { return }
-            
+            guard let cropped = fullImage.cropping(to: flippedRect) else {
+                NSLog("[gptapp] Failed to crop screenshot image")
+                return
+            }
+
+            NSLog("[gptapp] Calling delegate with captured screenshot")
             self.delegate?.screenshotOverlayDidCaptureImage(cropped)
         }
     }
+
     
     private func requestExit() {
         delegate?.screenshotOverlayDidRequestExit()
