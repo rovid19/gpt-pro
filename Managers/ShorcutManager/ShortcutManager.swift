@@ -49,7 +49,7 @@ class ShortcutManager: ObservableObject {
         globalShortcut.setup()
         
         // Register app shortcuts initially if app is active
-        if NSApp.isActive {
+        if NSApp?.isActive == true {
             appShortcut.registerScreenshotHotkeys()
         }
     }

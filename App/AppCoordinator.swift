@@ -8,36 +8,43 @@
 import Foundation
 import Cocoa
 import WebKit
-
+import SwiftUI
+import AppKit
 class AppCoordinator: ObservableObject {
     // MARK: - Managers
     let shortcutManager: ShortcutManager
     
     // MARK: - Screenshot Components
     private var screenshotOverlayController: ScreenshotOverlayController?
+    private var screenshotPreviewController: ScreenshotPreviewController?
     
     // MARK: - WebView
-    @Published var chatGPTWebView: ChatGPTWebView
+    // WKWebView-related properties removed due to project pivot
     
-    var screenshot: CGImage?
-    
+    var homeView: NSView?
+    var window: NSWindow? 
+
+
     init() {
         self.shortcutManager = ShortcutManager()
-        self.chatGPTWebView = ChatGPTWebView()
         setupDelegates()
+      
     }
     
     private func setupDelegates() {
         shortcutManager.setAppShortcutDelegate(self)
     }
 
+    func test() {
+        NSLog("test homeHostingView: \(String(describing: homeView))")
     
+    }
     // MARK: - Screenshot Management
     
     func showScreenshotOverlay() {
         screenshotOverlayController = ScreenshotOverlayController(initialRect: CGRect(x: 0, y: 0, width: 400, height: 300))
         screenshotOverlayController?.delegate = self
-        // If needed, pass chatGPTWebView or its WKWebView to overlay
+        // If needed, pass other dependencies to overlay
     }
     
     func hideScreenshotOverlay() {
@@ -72,10 +79,18 @@ extension AppCoordinator: ScreenshotOverlayControllerDelegate {
         hideScreenshotOverlay()
     }
     
-    func screenshotOverlayDidCaptureImage(_ image: CGImage) {
-        NSLog("[gptapp] AppCoordinator received screenshot from overlay delegate")
-        screenshot = image
-        NSLog("[gptapp] Screenshot saved to AppCoordinator property")
-        hideScreenshotOverlay()
-    }
+  func screenshotOverlayDidCaptureImage(_ image: CGImage) {
+    NSLog("[gptapp] [Preview] Entered screenshotOverlayDidCaptureImage")
+     NSLog("pre homeHostingView: \(String(describing: homeView) )")
+        NSLog("pre window: \(String(describing: window))")
+    hideScreenshotOverlay()
+         NSLog("post homeHostingView: \(String(describing: homeView))")
+        NSLog("post window: \(String(describing: window?.contentView))")
+
+    screenshotPreviewController = ScreenshotPreviewController()
+
+    screenshotPreviewController?.showPreview(from: image, in: homeView!)
+}
+
+
 }
