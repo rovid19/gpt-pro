@@ -26,7 +26,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         coordinator.homeWindow = homeWindow
         homeWindow.makeKeyAndOrderFront(nil)
         homeWindow.makeMain() 
-        coordinator.showHomeWindowIfNeeded = showHomeWindowIfNeeded
+
         
         NSLog("[gptapp] [AppDelegate] ✅  HomeWindow window created")
         NSLog("[gptapp] [AppDelegate] Window valid: \(homeWindow.isVisible)")
@@ -35,17 +35,23 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidBecomeActive(_ notification: Notification) {
         showHomeWindowIfNeeded()
     }
-      func showHomeWindowIfNeeded() {
-        if coordinator.isScreenshotMode {
-            return
-        }
-        if !homeWindow.isVisible {
-            homeWindow.makeKeyAndOrderFront(nil)
-        }
-        if homeWindow.isMiniaturized {
-            homeWindow.deminiaturize(nil)
-        }
+ func showHomeWindowIfNeeded() {
+    NSLog("[gptapp] [AppDelegate] ShowHomeWindowIfNeeded1")
+    if coordinator.isScreenshotMode {
+        return
     }
+    NSLog("[gptapp] [AppDelegate] showHomeWindowIfNeeded2")
+    // 🔥 This is the key line that forces a full switch to the app, including Space
+    NSRunningApplication.current.activate(options: [.activateAllWindows, .activateIgnoringOtherApps])
+
+    if homeWindow.isMiniaturized {
+        homeWindow.deminiaturize(nil)
+    }
+
+    homeWindow.makeKeyAndOrderFront(nil)
+    NSLog("[gptapp] [AppDelegate] homewindow is visible: \(homeWindow.isVisible)")
+}
+
 }
 
 class WindowDelegate: NSObject, NSWindowDelegate {

@@ -23,7 +23,6 @@ class AppCoordinator: ObservableObject {
     // WKWebView-related properties removed due to project pivot
     
     var homeWindow: HomeWindow?
- var showHomeWindowIfNeeded: (() -> Void)?
     var isScreenshotMode = false
    
 
@@ -48,14 +47,12 @@ class AppCoordinator: ObservableObject {
     // MARK: - Screenshot Management
     
 func showScreenshotOverlay() {
-
- 
     screenshotOverlayController = ScreenshotOverlayController(initialRect: CGRect(x: 0, y: 0, width: 400, height: 300))
     screenshotOverlayController?.delegate = self
 }
 
     
-    func hideScreenshotOverlay() {
+func hideScreenshotOverlay() {
         screenshotOverlayController?.hideOverlay()
         screenshotOverlayController = nil
     }
@@ -88,14 +85,10 @@ extension AppCoordinator: ScreenshotOverlayControllerDelegate {
     }
     
     func screenshotOverlayDidCaptureImage(_ image: CGImage) {
+        NSLog("[gptapp] [AppCoordinator] screenshotOverlayDidCaptureImage")
         isScreenshotMode = false
-        NSLog("[gptapp] image captured \(homeWindow)")
-        if !homeWindow!.isVisible {
-            NSLog("[gptapp] homeWindow is not visible")
-           showHomeWindowIfNeeded?()
-        }
-        else {
-            NSLog("[gptapp] homeWindow is visible")
+        if let appDelegate = NSApp.delegate as? AppDelegate {
+            appDelegate.showHomeWindowIfNeeded()
         }
         hideScreenshotOverlay()
         screenshotPreviewController = ScreenshotPreviewController()
@@ -108,11 +101,24 @@ extension AppCoordinator: ScreenshotOverlayControllerDelegate {
 extension AppCoordinator: GlobalShortcutDelegate {
     func globalShortcutDidRequestScreenshotMode() {
         isScreenshotMode = true
+        homeWindow?.orderOut(nil) // Hide main overlay window when entering screenshot mode
         showScreenshotOverlay()
     }
 
-    func globalShortcutDidRequestToExitScreenshotMode() {
-        isScreenshotMode = false
+    func globalShortcutDidRequestToExitScreenshotModeOrMinimizeApp() {
+        if !isScreenshotMode {
+            NSApp.hide(nil)
+        }
+        else {
+ isScreenshotMode = false
         hideScreenshotOverlay()
+        }
+       
+    }
+
+    func globalShortcutDidRequestToOpenApp() {
+        if let appDelegate = NSApp.delegate as? AppDelegate {
+            appDelegate.showHomeWindowIfNeeded()
+        }
     }
 }

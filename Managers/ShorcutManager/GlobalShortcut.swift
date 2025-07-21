@@ -11,13 +11,15 @@ import Cocoa
 
 protocol GlobalShortcutDelegate: AnyObject {
     func globalShortcutDidRequestScreenshotMode()
-    func globalShortcutDidRequestToExitScreenshotMode()
+    func globalShortcutDidRequestToExitScreenshotModeOrMinimizeApp()
+    func globalShortcutDidRequestToOpenApp()
 }
 
 
 class GlobalShortcut {
     var screenshotHotKey: HotKey?
     var exitScreenshotHotKey: HotKey?
+    var openAppHotKey: HotKey?
     weak var delegate: GlobalShortcutDelegate?
     
     func setup() {
@@ -35,8 +37,17 @@ class GlobalShortcut {
         exitScreenshotHotKey = HotKey(key: .escape, modifiers: [.command])
         exitScreenshotHotKey?.keyDownHandler = { [weak self] in
             DispatchQueue.main.async {
-                self?.delegate?.globalShortcutDidRequestToExitScreenshotMode()
-                NSLog("[gptapp] [GlobalShortcut] globalShortcutDidRequestToExitScreenshotMode")
+                self?.delegate?.globalShortcutDidRequestToExitScreenshotModeOrMinimizeApp()
+                NSLog("[gptapp] [GlobalShortcut] globalShortcutDidRequestToExitScreenshotModeOrMinimizeApp")
+            }
+        }
+
+        // Register Option + Space as a global shortcut
+        openAppHotKey = HotKey(key: .space, modifiers: [.option])
+        openAppHotKey?.keyDownHandler = { [weak self] in
+            DispatchQueue.main.async {
+                NSApp.activate(ignoringOtherApps: true)
+                NSLog("[gptapp] [GlobalShortcut] globalShortcutDidRequestToOpenApp")
             }
         }
     }

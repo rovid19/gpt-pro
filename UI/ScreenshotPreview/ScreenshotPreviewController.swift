@@ -6,6 +6,27 @@ extension NSPasteboard.PasteboardType {
 }
 
 class DraggableImageView: NSImageView {
+    private var trackingArea: NSTrackingArea?
+
+    override func updateTrackingAreas() {
+        super.updateTrackingAreas()
+        if let trackingArea = trackingArea {
+            self.removeTrackingArea(trackingArea)
+        }
+        let options: NSTrackingArea.Options = [.mouseEnteredAndExited, .activeInActiveApp, .inVisibleRect]
+        let area = NSTrackingArea(rect: self.bounds, options: options, owner: self, userInfo: nil)
+        self.addTrackingArea(area)
+        self.trackingArea = area
+    }
+
+    override func mouseEntered(with event: NSEvent) {
+        NSCursor.pointingHand.push()
+    }
+
+    override func mouseExited(with event: NSEvent) {
+        NSCursor.pop()
+    }
+
     override func mouseDown(with event: NSEvent) {
         guard let image = self.image else { return }
         let tempDir = URL(fileURLWithPath: NSTemporaryDirectory())
@@ -39,37 +60,33 @@ class ScreenshotPreviewController {
     NSLog("[gptapp] [Preview] showPreview called")
     removePreview()
 
-    homeView.contentView?.wantsLayer = true
-    let previewWidth: CGFloat = 200
-    let aspectRatio = CGFloat(image.height) / CGFloat(image.width)
-    let previewHeight = previewWidth * aspectRatio
-
-    let homeFrame = homeView.frame
-
-    let centerX = homeFrame.width / 2 - previewWidth / 2
-    let centerY = homeFrame.height / 2 - previewHeight / 2
-    let previewFrame = CGRect(x: centerX, y: centerY, width: previewWidth, height: previewHeight)
-
-    let nsImage = NSImage(cgImage: image, size: NSSize(width: previewWidth, height: previewHeight))
-
-
-    let imageView = DraggableImageView(frame: previewFrame)
-    imageView.image = nsImage
-    imageView.imageScaling = .scaleProportionallyUpOrDown
-    imageView.wantsLayer = true
-    imageView.layerContentsRedrawPolicy = .onSetNeedsDisplay
-    imageView.layer?.contents = nsImage
-    imageView.layer?.cornerRadius = 8
-    imageView.layer?.borderWidth = 1
-    imageView.layer?.borderColor = NSColor.white.withAlphaComponent(0.4).cgColor
-    imageView.layer?.backgroundColor = NSColor.black.withAlphaComponent(0.3).cgColor
-    imageView.layer?.zPosition = 999
-
-    homeView.contentView?.addSubview(imageView)
-    imageView.needsDisplay = true
-    homeView.displayIfNeeded()
-    
-    self.previewImageView = imageView
+    NSLog("[gptapp] [Preview] homeView is type: %@", String(describing: type(of: homeView)))
+    if let homeWindow = homeView as? HomeWindow {
+        NSLog("[gptapp] [Preview] homeView is HomeWindow")
+        if let homeView = homeWindow.homeView {
+            NSLog("[gptapp] [Preview] homeWindow.homeView exists")
+            if let recents = homeView.recentScreenshotsView {
+                NSLog("[gptapp] [Preview] homeView.recentScreenshotsView exists, appending screenshot")
+                let containerWidth = recents.bounds.width - 2 * recents.padding
+                let aspectRatio = CGFloat(image.height) / CGFloat(image.width)
+                let imageView = DraggableImageView()
+                imageView.image = NSImage(cgImage: image, size: NSSize(width: containerWidth, height: containerWidth * aspectRatio))
+                imageView.imageScaling = .scaleProportionallyUpOrDown
+                imageView.translatesAutoresizingMaskIntoConstraints = false
+                NSLayoutConstraint.activate([
+                    imageView.widthAnchor.constraint(equalToConstant: containerWidth),
+                    imageView.heightAnchor.constraint(equalTo: imageView.widthAnchor, multiplier: aspectRatio)
+                ])
+                recents.appendScreenshot(imageView)
+            } else {
+                NSLog("[gptapp] [Preview] homeView.recentScreenshotsView is nil")
+            }
+        } else {
+            NSLog("[gptapp] [Preview] homeWindow.homeView is nil")
+        }
+    } else {
+        NSLog("[gptapp] [Preview] homeView is not HomeWindow")
+    }
 }
 
     func removePreview() {
