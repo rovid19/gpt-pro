@@ -35,25 +35,23 @@ class ScreenshotPreviewController {
     /// Shows the preview and returns the frame used for the preview image view.
     /// Appends the preview to the given HomeView's NSView representation.
 
- func showPreview(from image: CGImage, in homeView: NSView) {
+ func showPreview(from image: CGImage, in homeView: NSWindow) {
     NSLog("[gptapp] [Preview] showPreview called")
     removePreview()
 
-    homeView.wantsLayer = true
+    homeView.contentView?.wantsLayer = true
     let previewWidth: CGFloat = 200
     let aspectRatio = CGFloat(image.height) / CGFloat(image.width)
     let previewHeight = previewWidth * aspectRatio
 
     let homeFrame = homeView.frame
-    NSLog("[gptapp] homeView frame: \(homeFrame)")
-    NSLog("[gptapp] window: \(homeView.window?.description ?? "nil")")
 
     let centerX = homeFrame.width / 2 - previewWidth / 2
     let centerY = homeFrame.height / 2 - previewHeight / 2
     let previewFrame = CGRect(x: centerX, y: centerY, width: previewWidth, height: previewHeight)
 
     let nsImage = NSImage(cgImage: image, size: NSSize(width: previewWidth, height: previewHeight))
-    NSLog("[gptapp] nsImage size: \(nsImage.size.width) x \(nsImage.size.height)")
+
 
     let imageView = DraggableImageView(frame: previewFrame)
     imageView.image = nsImage
@@ -67,7 +65,7 @@ class ScreenshotPreviewController {
     imageView.layer?.backgroundColor = NSColor.black.withAlphaComponent(0.3).cgColor
     imageView.layer?.zPosition = 999
 
-    homeView.addSubview(imageView)
+    homeView.contentView?.addSubview(imageView)
     imageView.needsDisplay = true
     homeView.displayIfNeeded()
     

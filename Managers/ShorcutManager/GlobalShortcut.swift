@@ -8,90 +8,37 @@
 import Foundation
 import HotKey
 import Cocoa
-import WebKit
+
+protocol GlobalShortcutDelegate: AnyObject {
+    func globalShortcutDidRequestScreenshotMode()
+    func globalShortcutDidRequestToExitScreenshotMode()
+}
+
 
 class GlobalShortcut {
-    var hotKey: HotKey?
-    var newChatHotKey: HotKey?
-    private var webView: WKWebView?
-    
-    func setWebView(_ webView: WKWebView) {
-        self.webView = webView
-    }
+    var screenshotHotKey: HotKey?
+    var exitScreenshotHotKey: HotKey?
+    weak var delegate: GlobalShortcutDelegate?
     
     func setup() {
-        // Configure main hotkey with global priority
-        hotKey = HotKey(key: .space, modifiers: [.option])
-        hotKey?.keyDownHandler = {
+        // Register Option + Command + Enter as a global shortcut
+        screenshotHotKey = HotKey(key: .return, modifiers: [.option, .command])
+        screenshotHotKey?.keyDownHandler = { [weak self] in
             DispatchQueue.main.async {
-                NSApp.activate(ignoringOtherApps: true)
-                
-                // Always bring app to front, regardless of window state
-                if let window = NSApp.windows.first {
-                    window.orderFront(nil)
-                    window.makeKey()
-                    
-                    // If window was minimized, restore it
-                    if window.isMiniaturized {
-                        window.deminiaturize(nil)
-                    }
-                } else {
-                    // If no window exists, create one
-                    NSApp.sendAction(Selector(("newWindow:")), to: nil, from: nil)
-                }
+                //NSApp.activate(ignoringOtherApps: true)
+                self?.delegate?.globalShortcutDidRequestScreenshotMode()
+                NSLog("[gptapp] [GlobalShortcut] globalShortcutDidRequestScreenshotMode")
             }
         }
         
-        // Configure new chat hotkey
-        newChatHotKey = HotKey(key: .n, modifiers: [.option])
-        newChatHotKey?.keyDownHandler = {
+        // Register Command + Escape as a global shortcut
+        exitScreenshotHotKey = HotKey(key: .escape, modifiers: [.command])
+        exitScreenshotHotKey?.keyDownHandler = { [weak self] in
             DispatchQueue.main.async {
-                NSApp.activate(ignoringOtherApps: true)
-                
-                // Always create a new window for new chat
-                if let window = NSApp.windows.first {
-                    window.orderFront(nil)
-                    window.makeKey()
-                    
-                    // If window was minimized, restore it
-                    if window.isMiniaturized {
-                        window.deminiaturize(nil)
-                    }
-                    
-                    // Use stored webView reference if available
-                    if let webView = self.webView {
-                        let shortcutScript = """
-                        try {
-                            // Create a more robust keyboard event
-                            const event = new KeyboardEvent('keydown', {
-                                key: 'O',
-                                code: 'KeyO',
-                                keyCode: 79,
-                                which: 79,
-                                ctrlKey: false,
-                                shiftKey: true,
-                                altKey: false,
-                                metaKey: true,
-                                bubbles: true,
-                                cancelable: true,
-                                composed: true
-                            });
-                            
-                            // Dispatch to document
-                            document.dispatchEvent(event);
-                        } catch (error) {
-                            console.error('Error dispatching keyboard event:', error);
-                        }
-                        """
-                        webView.evaluateJavaScript(shortcutScript) { result, error in
-                            // JavaScript execution completed
-                        }
-                    }
-                } else {
-                    // If no window exists, create one
-                    NSApp.sendAction(Selector(("newWindow:")), to: nil, from: nil)
-                }
+                self?.delegate?.globalShortcutDidRequestToExitScreenshotMode()
+                NSLog("[gptapp] [GlobalShortcut] globalShortcutDidRequestToExitScreenshotMode")
             }
         }
     }
 }
+

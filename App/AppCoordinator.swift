@@ -11,6 +11,7 @@ import WebKit
 import SwiftUI
 import AppKit
 class AppCoordinator: ObservableObject {
+
     // MARK: - Managers
     let shortcutManager: ShortcutManager
     
@@ -21,31 +22,38 @@ class AppCoordinator: ObservableObject {
     // MARK: - WebView
     // WKWebView-related properties removed due to project pivot
     
-    var homeView: NSView?
-    var window: NSWindow? 
+    var homeWindow: HomeWindow?
+ var showHomeWindowIfNeeded: (() -> Void)?
+    var isScreenshotMode = false
+   
+
+   
 
 
-    init() {
+    init() {    
         self.shortcutManager = ShortcutManager()
-        setupDelegates()
+        shortcutManager.globalShortcut.delegate = self
+        //setupDelegates()
       
     }
     
-    private func setupDelegates() {
+   /* private func setupDelegates() {
         shortcutManager.setAppShortcutDelegate(self)
-    }
+    }*/
 
     func test() {
-        NSLog("test homeHostingView: \(String(describing: homeView))")
+        NSLog("test homeHostingView: \(String(describing: homeWindow))")
     
     }
     // MARK: - Screenshot Management
     
-    func showScreenshotOverlay() {
-        screenshotOverlayController = ScreenshotOverlayController(initialRect: CGRect(x: 0, y: 0, width: 400, height: 300))
-        screenshotOverlayController?.delegate = self
-        // If needed, pass other dependencies to overlay
-    }
+func showScreenshotOverlay() {
+
+ 
+    screenshotOverlayController = ScreenshotOverlayController(initialRect: CGRect(x: 0, y: 0, width: 400, height: 300))
+    screenshotOverlayController?.delegate = self
+}
+
     
     func hideScreenshotOverlay() {
         screenshotOverlayController?.hideOverlay()
@@ -61,7 +69,7 @@ class AppCoordinator: ObservableObject {
 
 
 // MARK: - AppShortcutDelegate
-
+/*
 extension AppCoordinator: AppShortcutDelegate {
     func appShortcutDidRequestScreenshotMode() {
         showScreenshotOverlay()
@@ -71,7 +79,7 @@ extension AppCoordinator: AppShortcutDelegate {
         hideScreenshotOverlay()
     }
 }
-
+*/
 // MARK: - ScreenshotOverlayControllerDelegate
 
 extension AppCoordinator: ScreenshotOverlayControllerDelegate {
@@ -79,18 +87,32 @@ extension AppCoordinator: ScreenshotOverlayControllerDelegate {
         hideScreenshotOverlay()
     }
     
-  func screenshotOverlayDidCaptureImage(_ image: CGImage) {
-    NSLog("[gptapp] [Preview] Entered screenshotOverlayDidCaptureImage")
-     NSLog("pre homeHostingView: \(String(describing: homeView) )")
-        NSLog("pre window: \(String(describing: window))")
-    hideScreenshotOverlay()
-         NSLog("post homeHostingView: \(String(describing: homeView))")
-        NSLog("post window: \(String(describing: window?.contentView))")
+    func screenshotOverlayDidCaptureImage(_ image: CGImage) {
+        isScreenshotMode = false
+        NSLog("[gptapp] image captured \(homeWindow)")
+        if !homeWindow!.isVisible {
+            NSLog("[gptapp] homeWindow is not visible")
+           showHomeWindowIfNeeded?()
+        }
+        else {
+            NSLog("[gptapp] homeWindow is visible")
+        }
+        hideScreenshotOverlay()
+        screenshotPreviewController = ScreenshotPreviewController()
+        screenshotPreviewController?.showPreview(from: image, in: homeWindow!)
+    }
 
-    screenshotPreviewController = ScreenshotPreviewController()
 
-    screenshotPreviewController?.showPreview(from: image, in: homeView!)
 }
 
+extension AppCoordinator: GlobalShortcutDelegate {
+    func globalShortcutDidRequestScreenshotMode() {
+        isScreenshotMode = true
+        showScreenshotOverlay()
+    }
 
+    func globalShortcutDidRequestToExitScreenshotMode() {
+        isScreenshotMode = false
+        hideScreenshotOverlay()
+    }
 }

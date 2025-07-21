@@ -9,25 +9,21 @@ import SwiftUI
 import WebKit
 
 class ShortcutManager: ObservableObject {
-    private let globalShortcut = GlobalShortcut()
+     let globalShortcut = GlobalShortcut()
     private let appShortcut = AppShortcut()
     
     init() {
         setup()
-        setupAppStateMonitoring()
+        //setupAppStateMonitoring()
     }
     
-    func setWebView(_ webView: WKWebView) {
-        globalShortcut.setWebView(webView)
-    }
-    
-    func setAppShortcutDelegate(_ delegate: AppShortcutDelegate) {
+    /*func setAppShortcutDelegate(_ delegate: AppShortcutDelegate) {
         appShortcut.delegate = delegate
-    }
+    }*/
     
     private func setupAppStateMonitoring() {
         // Monitor app activation/deactivation to manage screenshot hotkeys
-        NotificationCenter.default.addObserver(
+       /* NotificationCenter.default.addObserver(
             forName: NSApplication.didBecomeActiveNotification,
             object: nil,
             queue: .main
@@ -41,7 +37,7 @@ class ShortcutManager: ObservableObject {
             queue: .main
         ) { _ in
             self.appShortcut.unregisterScreenshotHotkeys()
-        }
+        }*/
     }
     
     private func setup() {
@@ -49,8 +45,8 @@ class ShortcutManager: ObservableObject {
         globalShortcut.setup()
         
         // Register app shortcuts initially if app is active
-        if NSApp?.isActive == true {
-            appShortcut.registerScreenshotHotkeys()
-        }
+        /*if NSApp?.isActive == true {
+            globalShortcut.registerScreenshotHotkeys()
+        }*/
     }
 } 

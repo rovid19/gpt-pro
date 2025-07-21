@@ -83,12 +83,13 @@ class ScreenshotOverlayView: NSView {
             defer: false
         )
         
-        overlayWindow.level = .screenSaver
+        overlayWindow.level = .floating
         overlayWindow.backgroundColor = NSColor.clear
         overlayWindow.isOpaque = false
         overlayWindow.hasShadow = false
         overlayWindow.ignoresMouseEvents = false
         overlayWindow.acceptsMouseMovedEvents = true
+        overlayWindow.collectionBehavior = [.canJoinAllSpaces, .stationary, .ignoresCycle]
         self.overlayWindow = overlayWindow
 
         let frameSize = CGSize(width: 400, height: 300)
@@ -103,6 +104,10 @@ class ScreenshotOverlayView: NSView {
 
         self.overlayWindow?.makeKeyAndOrderFront(nil)
         self.overlayWindow?.makeFirstResponder(controller)
+        
+        // Force window to front and activate app
+        NSApp.activate(ignoringOtherApps: true)
+        self.overlayWindow?.orderFrontRegardless()
     }
 
     

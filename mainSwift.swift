@@ -9,8 +9,9 @@ import Cocoa
 import ApplicationServices
 
 class AppDelegate: NSObject, NSApplicationDelegate {
-    var window: NSWindow!
     let coordinator = AppCoordinator()
+    var homeWindow = HomeWindow()
+
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         print("applicationDidFinishLaunching")
@@ -19,35 +20,31 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         checkAccessibilityPermission()
         checkScreenshotPermission()
 
-        let homeView = HomeView(frame: NSRect(x: 0, y: 0, width: 1280, height: 800))
-        // If you have a HomeViewController, set it up here and assign to homeView.controller if needed
+        
+        // Set up coordinator with the home window
 
-        window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 1280, height: 800),
-            styleMask: [.titled, .closable, .resizable],
-            backing: .buffered,
-            defer: false
-        )
+        coordinator.homeWindow = homeWindow
+        homeWindow.makeKeyAndOrderFront(nil)
+        homeWindow.makeMain() 
+        coordinator.showHomeWindowIfNeeded = showHomeWindowIfNeeded
+        
+        NSLog("[gptapp] [AppDelegate] ✅  HomeWindow window created")
+        NSLog("[gptapp] [AppDelegate] Window valid: \(homeWindow.isVisible)")
+    }
 
-        window.contentView?.addSubview(homeView)
-        homeView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            homeView.topAnchor.constraint(equalTo: window.contentView!.topAnchor),
-            homeView.bottomAnchor.constraint(equalTo: window.contentView!.bottomAnchor),
-            homeView.leadingAnchor.constraint(equalTo: window.contentView!.leadingAnchor),
-            homeView.trailingAnchor.constraint(equalTo: window.contentView!.trailingAnchor)
-        ])
-
-        window.makeKeyAndOrderFront(nil)
-        window.delegate = windowDelegate
-        NSApp.activate(ignoringOtherApps: true)
-
-        coordinator.homeView = homeView
-        // coordinator.test() or other setup if needed
-
-        NSLog("[gptapp] [AppDelegate] ✅ Attached HomeView to window")
-        NSLog("[gptapp] [AppDelegate] Frame: \(homeView.frame)")
-        NSLog("[gptapp] [AppDelegate] Window valid: \(homeView.window != nil)")
+    func applicationDidBecomeActive(_ notification: Notification) {
+        showHomeWindowIfNeeded()
+    }
+      func showHomeWindowIfNeeded() {
+        if coordinator.isScreenshotMode {
+            return
+        }
+        if !homeWindow.isVisible {
+            homeWindow.makeKeyAndOrderFront(nil)
+        }
+        if homeWindow.isMiniaturized {
+            homeWindow.deminiaturize(nil)
+        }
     }
 }
 
@@ -67,11 +64,6 @@ let windowDelegate = WindowDelegate()
 func setupAppBehavior() {
     // Prevent app from terminating when window is closed
     NSApp.setActivationPolicy(.regular)
-    // Set up window delegate to handle window closing
-    if let window = NSApp.windows.first {
-        window.delegate = windowDelegate
-        // Removed floating, ignoresMouseEvents, isOpaque, and backgroundColor settings
-    }
 }
 
 func checkAccessibilityPermission() {
