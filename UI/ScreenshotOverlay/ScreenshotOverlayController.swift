@@ -121,18 +121,39 @@ class ScreenshotOverlayController: NSResponder {
     
     // MARK: - Logic Methods
     
-    private func resizeFrame(by delta: CGFloat) {
-        let newWidth = overlayView.frame.width + delta
-        let newHeight = overlayView.frame.height + delta
-        guard newWidth >= minSize, newHeight >= minSize else { return }
-        
-        let newOrigin = CGPoint(
-            x: overlayView.frame.origin.x - delta / 2,
-            y: overlayView.frame.origin.y - delta / 2
-        )
-        
-        let newFrame = CGRect(origin: newOrigin, size: CGSize(width: newWidth, height: newHeight))
-        overlayView.animateFrame(to: newFrame)
+    private func resizeFrame(by delta: CGFloat, fromArrow: Bool = false, widthOnly: Bool = false, heightOnly: Bool = false) {
+        if widthOnly {
+            // Only resize width for left/right arrows
+            let newWidth = overlayView.frame.width + delta
+            guard newWidth >= minSize else { return }
+            let newOrigin = CGPoint(
+                x: overlayView.frame.origin.x - delta / 2,
+                y: overlayView.frame.origin.y
+            )
+            let newFrame = CGRect(origin: newOrigin, size: CGSize(width: newWidth, height: overlayView.frame.height))
+            overlayView.animateFrame(to: newFrame)
+        } else if heightOnly {
+            // Only resize height for up/down arrows
+            let newHeight = overlayView.frame.height + delta
+            guard newHeight >= minSize else { return }
+            let newOrigin = CGPoint(
+                x: overlayView.frame.origin.x,
+                y: overlayView.frame.origin.y - delta / 2
+            )
+            let newFrame = CGRect(origin: newOrigin, size: CGSize(width: overlayView.frame.width, height: newHeight))
+            overlayView.animateFrame(to: newFrame)
+        }  else {
+            // Old behavior: resize both width and height (gesture)
+            let newWidth = overlayView.frame.width + delta
+            let newHeight = overlayView.frame.height + delta
+            guard newWidth >= minSize, newHeight >= minSize else { return }
+            let newOrigin = CGPoint(
+                x: overlayView.frame.origin.x - delta / 2,
+                y: overlayView.frame.origin.y - delta / 2
+            )
+            let newFrame = CGRect(origin: newOrigin, size: CGSize(width: newWidth, height: newHeight))
+            overlayView.animateFrame(to: newFrame)
+        }
     }
     
     private func rotateFrame() {
@@ -160,9 +181,13 @@ class ScreenshotOverlayController: NSResponder {
         case 15: // R key
             rotateFrame()
         case 126: // Up arrow
-            resizeFrame(by: 20)
+            resizeFrame(by: 20, heightOnly: true)
         case 125: // Down arrow
-            resizeFrame(by: -20)
+            resizeFrame(by: -20, heightOnly: true)
+        case 123: // Left arrow
+            resizeFrame(by: -20, widthOnly: true)
+        case 124: // Right arrow
+            resizeFrame(by: 20, widthOnly: true)
         case 36: // Enter key
             requestCapture()
         case 53: // Escape key

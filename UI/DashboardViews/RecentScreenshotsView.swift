@@ -3,7 +3,7 @@ import Cocoa
 
 
 class RecentScreenshotsView: NSView {
-    let padding: CGFloat = 16
+    let padding: CGFloat = 16   
     private let titleLabel: NSTextField = {
         let label = NSTextField(labelWithString: "Recent Screenshots")
         label.font = .systemFont(ofSize: 16, weight: .medium)
