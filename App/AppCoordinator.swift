@@ -23,32 +23,39 @@ class AppCoordinator: ObservableObject {
     // WKWebView-related properties removed due to project pivot
     
     var homeWindow: HomeWindow?
+    var homeViewController: HomeViewController?
     var isScreenshotMode = false
+
+    var wsBridge: WebSocketBridge?
+
+    var userStore: UserStore?
    
-
-   
-
-
     init() {    
         self.shortcutManager = ShortcutManager()
         shortcutManager.globalShortcut.delegate = self
-        //setupDelegates()
-      
+        self.wsBridge = WebSocketBridge()
+        self.userStore = UserStore()
     }
     
-   /* private func setupDelegates() {
-        shortcutManager.setAppShortcutDelegate(self)
-    }*/
-
-    func test() {
-        NSLog("test homeHostingView: \(String(describing: homeWindow))")
-    
-    }
     // MARK: - Screenshot Management
     
 func showScreenshotOverlay() {
     screenshotOverlayController = ScreenshotOverlayController(initialRect: CGRect(x: 0, y: 0, width: 400, height: 300))
     screenshotOverlayController?.delegate = self
+}
+
+func determineCurrentView() {
+    NSLog("[gptapp] [AppCoordinator] determining current view")
+    Task {
+        if await userStore?.isUserLoggedIn() == false {
+            NSLog("[gptapp] [AppCoordinator] user not logged in, rendering login view \(self.homeWindow)")
+            homeWindow?.renderView("login", appDelegate: self)
+        } else {
+            NSLog("[gptapp] [AppCoordinator] user logged in, rendering home view")
+             homeWindow?.renderView("home", appDelegate: self)
+        }
+    }
+  
 }
 
     
@@ -59,24 +66,6 @@ func hideScreenshotOverlay() {
 }
 
 
-
-
-
-
-
-
-// MARK: - AppShortcutDelegate
-/*
-extension AppCoordinator: AppShortcutDelegate {
-    func appShortcutDidRequestScreenshotMode() {
-        showScreenshotOverlay()
-    }
-    
-    func appShortcutDidRequestExitScreenshotMode() {
-        hideScreenshotOverlay()
-    }
-}
-*/
 // MARK: - ScreenshotOverlayControllerDelegate
 
 extension AppCoordinator: ScreenshotOverlayControllerDelegate {
@@ -85,7 +74,7 @@ extension AppCoordinator: ScreenshotOverlayControllerDelegate {
     }
     
     func screenshotOverlayDidCaptureImage(_ image: CGImage) {
-        NSLog("[gptapp] [AppCoordinator] screenshotOverlayDidCaptureImage")
+        NSLog("[gptapp] [AppCoordinator] image captured")
         isScreenshotMode = false
         if let appDelegate = NSApp.delegate as? AppDelegate {
             appDelegate.showHomeWindowIfNeeded()
@@ -100,6 +89,8 @@ extension AppCoordinator: ScreenshotOverlayControllerDelegate {
 
 extension AppCoordinator: GlobalShortcutDelegate {
     func globalShortcutDidRequestScreenshotMode() {
+        NSLog("[gptapp] [AppCoordinator] homeWindow \(homeWindow)")
+        NSLog("[gptapp] [AppCoordinator] screenshot mode requested")
         isScreenshotMode = true
         homeWindow?.orderOut(nil) // Hide main overlay window when entering screenshot mode
         showScreenshotOverlay()
@@ -120,5 +111,21 @@ extension AppCoordinator: GlobalShortcutDelegate {
         if let appDelegate = NSApp.delegate as? AppDelegate {
             appDelegate.showHomeWindowIfNeeded()
         }
+    }
+}
+
+extension AppCoordinator: UserStoreDelegate {
+    func userDidAuth(email: String) {
+        NSLog("[gptapp] [AppCoordinator] user logged in or registered")
+        determineCurrentView()
+        userStore?.setUser(email: email)
+
+    }
+
+    func userDidLogout() {
+        NSLog("[gptapp] [AppCoordinator] user logged out")
+         userStore?.clearUser()
+        determineCurrentView()
+       
     }
 }

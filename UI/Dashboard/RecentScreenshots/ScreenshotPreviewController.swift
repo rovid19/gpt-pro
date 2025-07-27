@@ -2,12 +2,13 @@ import Cocoa
 import SwiftUI
 
 class ScreenshotPreviewController {
-    private var previewImageView: DraggableImageView?
+     var previewImageView: DraggableImageView?
 
- func showPreview(from image: CGImage, in homeView: NSWindow) {
-    removePreview()
-
-    if let homeWindow = homeView as? HomeWindow {
+ func showPreview(from image: CGImage, in homeWindow: NSWindow) {
+    //removePreview()
+    NSLog("[gptapp] [ScreenshotPreviewController] showPreview")
+    NSLog("[gptapp] [ScreenshotPreviewController] homeView \(homeWindow)")
+    if let homeWindow = homeWindow as? HomeWindow {
         if let homeView = homeWindow.homeView {
             if let recents = homeView.recentScreenshotsView {
                 let containerWidth = recents.bounds.width - 2 * recents.padding
@@ -28,7 +29,7 @@ class ScreenshotPreviewController {
             NSLog("[gptapp] [Preview] homeWindow.homeView is nil")
         }
     } else {
-        NSLog("[gptapp] [Preview] homeView is not HomeWindow")
+        NSLog("[gptapp] [Preview] homeWindow is nil")
     }
 }
 

@@ -197,12 +197,10 @@ class ScreenshotOverlayController: NSResponder {
         }
     }
     
-    private func requestCapture() {
-        NSLog("[gptapp] Screenshot capture requested")
+    private func requestCapture() {      
         let cropRect = overlayView.frame
         screenshotService.captureOnce { fullImage in
             guard let fullImage = fullImage else {
-                NSLog("[gptapp] ScreenshotService returned nil image")
                 return
             }
             let flippedRect = CGRect(
@@ -212,11 +210,8 @@ class ScreenshotOverlayController: NSResponder {
                 height: cropRect.height
             )
             guard let cropped = fullImage.cropping(to: flippedRect) else {
-                NSLog("[gptapp] Failed to crop screenshot image")
                 return
             }
-
-            NSLog("[gptapp] Calling delegate with captured screenshot")
             self.delegate?.screenshotOverlayDidCaptureImage(cropped)
         }
     }

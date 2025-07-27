@@ -10,7 +10,9 @@ import ApplicationServices
 
 class AppDelegate: NSObject, NSApplicationDelegate {
     let coordinator = AppCoordinator()
+    var homeViewController = HomeViewController()
     var homeWindow = HomeWindow()
+   
 
 
     func applicationDidFinishLaunching(_ notification: Notification) {
@@ -22,25 +24,20 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         
         // Set up coordinator with the home window
-
+        coordinator.homeViewController = HomeViewController()
         coordinator.homeWindow = homeWindow
         homeWindow.makeKeyAndOrderFront(nil)
         homeWindow.makeMain() 
-
-        
-        NSLog("[gptapp] [AppDelegate] ✅  HomeWindow window created")
-        NSLog("[gptapp] [AppDelegate] Window valid: \(homeWindow.isVisible)")
+        coordinator.determineCurrentView()
     }
 
     func applicationDidBecomeActive(_ notification: Notification) {
         showHomeWindowIfNeeded()
     }
  func showHomeWindowIfNeeded() {
-    NSLog("[gptapp] [AppDelegate] ShowHomeWindowIfNeeded1")
     if coordinator.isScreenshotMode {
         return
     }
-    NSLog("[gptapp] [AppDelegate] showHomeWindowIfNeeded2")
     // 🔥 This is the key line that forces a full switch to the app, including Space
     NSRunningApplication.current.activate(options: [.activateAllWindows, .activateIgnoringOtherApps])
 
@@ -49,7 +46,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     homeWindow.makeKeyAndOrderFront(nil)
-    NSLog("[gptapp] [AppDelegate] homewindow is visible: \(homeWindow.isVisible)")
 }
 
 }
@@ -71,6 +67,8 @@ func setupAppBehavior() {
     // Prevent app from terminating when window is closed
     NSApp.setActivationPolicy(.regular)
 }
+
+
 
 func checkAccessibilityPermission() {
     if !AXIsProcessTrusted() {
