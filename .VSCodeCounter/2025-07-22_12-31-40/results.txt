@@ -1,0 +1,59 @@
+Date : 2025-07-22 12:31:40
+Directory : /Users/rock/Documents/Projekti/gpt-pro-app/gpt-pro-app
+Total : 19 files,  854 codes, 133 comments, 225 blanks, all 1212 lines
+
+Languages
++----------+------------+------------+------------+------------+------------+
+| language | files      | code       | comment    | blank      | total      |
++----------+------------+------------+------------+------------+------------+
+| Swift    |         16 |        779 |        133 |        222 |      1,134 |
+| JSON     |          3 |         75 |          0 |          3 |         78 |
++----------+------------+------------+------------+------------+------------+
+
+Directories
++---------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                                          | files      | code       | comment    | blank      | total      |
++---------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                             |         19 |        854 |        133 |        225 |      1,212 |
+| . (Files)                                                                                                     |          2 |         61 |         10 |         24 |         95 |
+| App                                                                                                           |          1 |         63 |         28 |         34 |        125 |
+| Assets.xcassets                                                                                               |          3 |         75 |          0 |          3 |         78 |
+| Assets.xcassets (Files)                                                                                       |          1 |          6 |          0 |          1 |          7 |
+| Assets.xcassets/AccentColor.colorset                                                                          |          1 |         11 |          0 |          1 |         12 |
+| Assets.xcassets/AppIcon.appiconset                                                                            |          1 |         58 |          0 |          1 |         59 |
+| Bridge                                                                                                        |          2 |         79 |         15 |         22 |        116 |
+| Managers                                                                                                      |          3 |         56 |         48 |         20 |        124 |
+| Managers/ShorcutManager                                                                                       |          3 |         56 |         48 |         20 |        124 |
+| UI                                                                                                            |          7 |        477 |         26 |        114 |        617 |
+| UI/DashboardViews                                                                                             |          1 |         55 |          0 |         13 |         68 |
+| UI/Home                                                                                                       |          2 |         98 |          5 |         18 |        121 |
+| UI/ScreenshotOverlay                                                                                          |          2 |        238 |         21 |         69 |        328 |
+| UI/ScreenshotPreview                                                                                          |          2 |         86 |          0 |         14 |        100 |
+| Utils                                                                                                         |          1 |         43 |          6 |          8 |         57 |
++---------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++---------------------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| filename                                                                                                      | language | code       | comment    | blank      | total      |
++---------------------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| /Users/rock/Documents/Projekti/gpt-pro-app/gpt-pro-app/App/AppCoordinator.swift                               | Swift    |         63 |         28 |         34 |        125 |
+| /Users/rock/Documents/Projekti/gpt-pro-app/gpt-pro-app/Assets.xcassets/AccentColor.colorset/Contents.json     | JSON     |         11 |          0 |          1 |         12 |
+| /Users/rock/Documents/Projekti/gpt-pro-app/gpt-pro-app/Assets.xcassets/AppIcon.appiconset/Contents.json       | JSON     |         58 |          0 |          1 |         59 |
+| /Users/rock/Documents/Projekti/gpt-pro-app/gpt-pro-app/Assets.xcassets/Contents.json                          | JSON     |          6 |          0 |          1 |          7 |
+| /Users/rock/Documents/Projekti/gpt-pro-app/gpt-pro-app/Bridge/ChromeExtensionBridge.swift                     | Swift    |         58 |         15 |         17 |         90 |
+| /Users/rock/Documents/Projekti/gpt-pro-app/gpt-pro-app/Bridge/XcodeBridge.swift                               | Swift    |         21 |          0 |          5 |         26 |
+| /Users/rock/Documents/Projekti/gpt-pro-app/gpt-pro-app/Managers/ShorcutManager/AppShortcut.swift              | Swift    |          5 |          7 |          3 |         15 |
+| /Users/rock/Documents/Projekti/gpt-pro-app/gpt-pro-app/Managers/ShorcutManager/GlobalShortcut.swift           | Swift    |         37 |         10 |          9 |         56 |
+| /Users/rock/Documents/Projekti/gpt-pro-app/gpt-pro-app/Managers/ShorcutManager/ShortcutManager.swift          | Swift    |         14 |         31 |          8 |         53 |
+| /Users/rock/Documents/Projekti/gpt-pro-app/gpt-pro-app/UI/DashboardViews/RecentScreenshotsView.swift          | Swift    |         55 |          0 |         13 |         68 |
+| /Users/rock/Documents/Projekti/gpt-pro-app/gpt-pro-app/UI/Home/HomeWindow.swift                               | Swift    |         79 |          5 |         15 |         99 |
+| /Users/rock/Documents/Projekti/gpt-pro-app/gpt-pro-app/UI/Home/HomeWindowController.swift                     | Swift    |         19 |          0 |          3 |         22 |
+| /Users/rock/Documents/Projekti/gpt-pro-app/gpt-pro-app/UI/ScreenshotOverlay/ScreenshotOverlayController.swift | Swift    |        152 |         10 |         42 |        204 |
+| /Users/rock/Documents/Projekti/gpt-pro-app/gpt-pro-app/UI/ScreenshotOverlay/ScreenshotOverlayView.swift       | Swift    |         86 |         11 |         27 |        124 |
+| /Users/rock/Documents/Projekti/gpt-pro-app/gpt-pro-app/UI/ScreenshotPreview/DraggableImageView.swift          | Swift    |         51 |          0 |          9 |         60 |
+| /Users/rock/Documents/Projekti/gpt-pro-app/gpt-pro-app/UI/ScreenshotPreview/ScreenshotPreviewController.swift | Swift    |         35 |          0 |          5 |         40 |
+| /Users/rock/Documents/Projekti/gpt-pro-app/gpt-pro-app/Utils/ScreenshotService.swift                          | Swift    |         43 |          6 |          8 |         57 |
+| /Users/rock/Documents/Projekti/gpt-pro-app/gpt-pro-app/main.swift                                             | Swift    |          4 |          0 |          2 |          6 |
+| /Users/rock/Documents/Projekti/gpt-pro-app/gpt-pro-app/mainSwift.swift                                        | Swift    |         57 |         10 |         22 |         89 |
+| Total                                                                                                         |          |        854 |        133 |        225 |      1,212 |
++---------------------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+

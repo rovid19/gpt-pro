@@ -1,0 +1,51 @@
+---
+alwaysApply: true
+---
+
+---
+
+## alwaysApply: true
+
+# 🧭 Cursor Project Structure Rules
+
+## 🗂️ Root Structure
+
+- The root folder contains only the **main entry point files**, including:
+  - `mainApp.swift`
+  - `ContentView.swift`
+  - `gpt_pro_app.entitlements`
+
+## 🧠 App Coordinator
+
+- The `App/AppCoordinator.swift` file is the **central brain** of the app.
+- It initializes and holds references to all modular components (managers, controllers, views).
+- All shared dependencies (e.g., `WKWebView`, overlay controllers) are injected or accessed through this class.
+
+## 📦 Folder Breakdown
+
+### `Managers/`
+
+- Contains all **non-UI logic and state managers**.
+- Each manager handles a specific domain (e.g., shortcuts, themes).
+- Sub-managers (like `GlobalShortcuts.swift`, `AppShortcuts.swift`) can exist in subfolders (e.g. `Managers/ShortcutManager/`).
+- Each manager entry point is always named `XYZManager.swift`, and it orchestrates its subcomponents.
+
+### `UI/`
+
+- Handles everything related to UI rendering and UI logic.
+- Each UI component is split into two files:
+  - `ComponentView.swift`: only responsible for rendering.
+  - `ComponentController.swift`: contains the logic and state for that component.
+- Optional folders like `ScreenshotOverlay/`, `WebView/`, etc., group related UI modules.
+
+### `Utils/`
+
+- Contains **reusable utility code** shared across the app.
+- This includes extensions, helpers, formatting tools, etc.
+
+## ✅ Best Practices
+
+- Keep **Managers** logic-only and decoupled from UI.
+- Keep **UI** modules cleanly separated between view and controller.
+- All global coordination happens in `AppCoordinator`.
+- Follow naming conventions: `XYZManager`, `XYZView`, `XYZController`.
